@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>放大镜</title>
+		<style>
+			/* 备注不能使用 "//" 要用 /**/
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.box{
+				width: 500px;
+				height: 500px;
+				/* border: 1px solid red; */
+				position: relative;/* 父盒子相对定位 */
+			}
+			.box>.small{
+				width: 200px;
+				height: 200px;
+				background-color: aqua;
+			}
+			.box>.small>img{
+				width: 200px;
+				height: 200px;
+			}
+			.box>.small>span{
+				width: 100px;
+				height: 100px;
+				display: inline-block;/* display:inline-block 对应span标签:是行内标签不独占一行 既包括行内元素又包括块级元素所以用inline-block可以使span标签显示在盒子上方 */
+				position: absolute;/* 子盒子绝对定位 */
+				top: 0px;
+				left: 0px;
+				display: none;
+				background-color: rgba(97, 155,200, 0.5);/* a代表alpha通道，即透明度。透明度的值范围从0（完全透明）到1（完全不透明）。 */
+				/* background-color: red; */
+			}
+			.box>.big{
+				width: 300px;
+				height: 300px;
+				background-color: aquamarine;
+				position: absolute;/* 子盒子绝对定位 */
+				top: 0px;
+				right: 0px;
+				overflow: hidden;/* 隐藏超出范围的照片 */
+				display: none;/* 隐藏大盒子 */
+			}
+			.box>.big>img{
+				width: 600px;
+				height: 600px;
+				position: absolute;
+				left: 0px;
+				top: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box">
+			<!-- 快捷键：div.box -->
+			<!-- div块级元素，独占一行，会出现在小盒子的下方，因此要用定位来控制盒子的位置 -->
+			<div class="small">
+				<img src="./img/1.jpg" alt="" />
+				<span></span>
+			</div>
+			<div class="big">
+				<img src="./img/1.jpg" alt="" />
+			</div>
+		</div>
+	</body>
+	<script>
+		//获取大盒子和小盒子
+		var small=document.querySelector(".small");
+		var big=document.querySelector(".big");
+		var span=document.querySelector("span");
+		var big_img=document.querySelectorAll("img")[1];
+		// console.log(span);
+		// console.log(big);
+		
+		//事件
+		//显示大盒子和遮罩层
+		small.onmouseover=function(){
+			big.style.display="block";
+			span.style.display="block";
+		}
+		//隐藏大盒子遮罩层
+		small.onmouseout=function(){
+			big.style.display="none";
+			span.style.display="none";
+		}
+		
+		//遮盖层坐标值--鼠标移动事件
+		var x;
+		var y;
+		var xx;
+		var yy;
+		small.onmousemove=function(e){
+			// //获取span的宽度
+			var span_width=span.offsetWidth;
+			var small_width=small.offsetWidth;
+			// console.log(span_width);
+			var big_width=big.offsetWidth;
+			var big_img_width=big_img.offsetWidth;
+			// //获取鼠标坐标值
+			console.log(e.clientX+"=="+e.clientY);
+			 x=e.clientX-span_width/2;
+			 y=e.clientY-span_width/2;
+			if(x<0){
+				x=0;
+			}
+			if(x>small_width-span_width){
+				x=small_width-span_width;
+			}
+			if(y<0){
+				y=0;
+			}
+			if(y>small_width-span_width){
+				y=small_width-span_width;
+			}
+			
+			span.style.left=`${x}px`;//不能用()否则会导致遮罩层不能移动
+			span.style.top=`${y}px`;
+			
+			
+			xx=-x*(big_img_width-big_width)/(small_width-span_width);//当x为正值时放大的图片会随遮罩层的移动朝遮罩层的反方向移动 因此要使x为负值从而使放大图片随遮罩层的移动方向而移动 yy同理
+			yy=-y*(big_img_width-big_width)/(small_width-span_width);
+			
+			big_img.style.left=`${xx}px`;
+			big_img.style.top=`${yy}px`;
+		}
+	</script>
+</html>
